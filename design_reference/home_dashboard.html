@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "inverse-surface": "#2b2e48", "primary": "#9a442d", "secondary-fixed": "#bbeed4", "secondary-container": "#b8ebd1", "on-tertiary-container": "#4c2500", "on-primary-fixed": "#3c0800", "error-container": "#ffdad6", "surface-bright": "#fbf8ff", "primary-container": "#e07a5f", "outline": "#88726d", "primary-fixed-dim": "#ffb4a1", "surface-container-lowest": "#ffffff", "tertiary-container": "#d18547", "surface-dim": "#d6d8f9", "on-tertiary-fixed": "#2f1400", "inverse-on-surface": "#f1efff", "error": "#ba1a1a", "surface-tint": "#9a442d", "on-surface": "#161a32", "secondary-fixed-dim": "#9fd1b8", "tertiary": "#8e4e14", "on-primary-container": "#5b1604", "on-secondary-fixed-variant": "#1f4f3c", "primary-fixed": "#ffdbd2", "secondary": "#386753", "on-background": "#161a32", "on-error-container": "#93000a", "surface-container": "#edecff", "surface": "#fbf8ff", "on-secondary-container": "#3d6c57", "surface-variant": "#dfe0ff", "on-primary-fixed-variant": "#7c2e19", "surface-container-highest": "#dfe0ff", "on-surface-variant": "#55423e", "on-secondary": "#ffffff", "tertiary-fixed-dim": "#ffb780", "surface-container-low": "#f4f2ff", "background": "#fbf8ff", "on-error": "#ffffff", "outline-variant": "#dbc1ba", "surface-container-high": "#e6e6ff", "inverse-primary": "#ffb4a1", "on-secondary-fixed": "#002115", "on-tertiary": "#ffffff", "tertiary-fixed": "#ffdcc4", "on-primary": "#ffffff", "on-tertiary-fixed-variant": "#6f3800" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-sm": "0.5rem", "space-xl": "2rem", "gutter": "1rem", "space-2xl": "3rem", "space-xs": "0.25rem", "space-md": "1rem", "margin-tablet": "2rem", "space-lg": "1.5rem", "gutter-tablet": "1.5rem", "margin": "1rem" }, "fontFamily": { "headline-md": ["Epilogue"], "body-lg": ["Plus Jakarta Sans"], "display-sm": ["Epilogue"], "body-md": ["Plus Jakarta Sans"], "label-sm": ["Plus Jakarta Sans"], "headline-lg": ["Epilogue"], "display-lg": ["Epilogue"], "headline-sm": ["Epilogue"], "label-lg": ["Plus Jakarta Sans"], "body-sm": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-md": ["22px", { "lineHeight": "28px", "letterSpacing": "0em", "fontWeight": "600" }], "body-lg": ["16px", { "lineHeight": "24px", "letterSpacing": "0.01em", "fontWeight": "400" }], "display-sm": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }], "body-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "400" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "700" }], "headline-lg": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "display-lg": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700" }], "headline-sm": ["18px", { "lineHeight": "24px", "letterSpacing": "0em", "fontWeight": "600" }], "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "400" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.03em", "fontWeight": "600" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-background font-body-md text-on-surface antialiased min-h-screen flex flex-col"><header class="fixed top-0 inset-x-0 z-50 bg-surface/90 backdrop-blur-xl shadow-[0_4px_20px_-2px_rgba(61,64,91,0.04)] pt-safe"><div class="h-20 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0"><img alt="PawNatal Logo" class="h-8 w-auto object-contain flex-shrink-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAXx6Hf8RIE62Pdy_b3cup0zmbnzka5wKP1G8KlAxeJrhAzEZ8JyZudefw_mdVIAfdzOckyvJ8BUTCFSAatVp3tI4uknG0ZKwM7H7LfmN8cNGLllnZJhF2NABechcFFrRwGBBe1PMmoSbB4XcorR8wmayEf6M9JZybkquL2rUIpXFJL5NPcB44URFsiVLgraRJItUNnwdvbwTpINZQbDNRUZzLfi0C_o2maZ3SaztISVx6fbqCKTlY4w"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-primary tracking-tight">PawNatal</span><span class="hidden sm:inline-block text-outline-variant">•</span><span class="hidden sm:inline-block font-label-md text-label-md text-on-surface-variant truncate">Home</span></div><div class="flex items-center gap-1.5 mt-0.5"><div class="inline-flex items-center gap-1 bg-secondary-container px-2 py-0.5 rounded-full"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span><span class="font-label-sm text-label-sm text-on-secondary-container font-semibold truncate max-w-[130px]">Bella • Golden</span></div><span class="font-label-sm text-label-sm text-tertiary font-bold bg-tertiary-fixed px-2 py-0.5 rounded-full">Day 42/63</span></div></div></div><div class="flex items-center gap-2 flex-shrink-0"><button aria-label="Notifications" class="w-11 h-11 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container transition-colors relative"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0 shadow-[0_2px_6px_-1px_rgba(61,64,91,0.1)]"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-20 pb-28 px-margin bg-background"><div class="flex flex-col w-full gap-space-md">
+<!-- Status & Reassurance Header Pill -->
+<div class="flex items-center justify-between bg-surface-container-low px-space-md py-space-sm rounded-xl">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Gestational Stage:</span>
+<span class="font-label-md text-label-md text-primary font-bold">Week 6 (Trimester 2)</span>
+</div>
+<span class="bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-2.5 py-1 rounded-full flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+      21 Days Left
+    </span>
+</div>
+<!-- Hero Pregnancy Progress Card -->
+<div class="relative overflow-hidden bg-gradient-to-br from-surface-container-lowest via-surface-container-low to-primary-fixed/20 rounded-xl p-space-lg shadow-sm">
+<div class="flex items-start justify-between gap-space-sm relative z-10">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-tertiary uppercase tracking-wider font-semibold">Due May 3rd • Day 42 of 63</span>
+<h2 class="font-headline-md text-headline-md text-on-surface mt-0.5 font-bold">Bella's Journey</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Golden Retriever • Confirmed 6-8 Pups</p>
+</div>
+<div class="bg-primary/10 text-primary px-3 py-1.5 rounded-full flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">favorite</span>
+<span class="font-label-md text-label-md font-bold">67% Done</span>
+</div>
+</div>
+<!-- Progress Visualization Ring & Metrics -->
+<div class="flex items-center gap-space-lg my-space-md relative z-10">
+<div class="relative w-28 h-28 flex-shrink-0 flex items-center justify-center">
+<svg class="w-28 h-28 transform -rotate-90" viewbox="0 0 100 100">
+<circle class="text-surface-container" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-width="9"></circle>
+<circle class="text-primary-container" cx="50" cy="50" fill="transparent" r="40" stroke="currentColor" stroke-dasharray="251.2" stroke-dashoffset="82.9" stroke-linecap="round" stroke-width="9"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold leading-none">42</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">of 63 Days</span>
+</div>
+</div>
+<div class="flex flex-col justify-center gap-2 flex-1 min-w-0">
+<div class="bg-surface-container-lowest/80 p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">monitor_heart</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Litter Estimate</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">6–8 Pups</span>
+</div>
+<div class="bg-surface-container-lowest/80 p-2.5 rounded-lg flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary text-[20px]">hourglass_bottom</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Countdown</span>
+</div>
+<span class="font-label-lg text-label-lg text-primary font-bold">3 Weeks</span>
+</div>
+</div>
+</div>
+<!-- Linear Timeline Ribbon -->
+<div class="space-y-1.5 relative z-10">
+<div class="flex justify-between items-center text-on-surface-variant font-label-sm text-label-sm">
+<span>Tri 1 (Days 1–21)</span>
+<span class="text-primary font-bold">Tri 2 (Days 22–42)</span>
+<span>Tri 3 (Days 43–63)</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden flex">
+<div class="w-1/3 h-full bg-secondary"></div>
+<div class="w-1/3 h-full bg-primary-container"></div>
+<div class="w-1/3 h-full bg-surface-container"></div>
+</div>
+<div class="flex justify-between text-on-surface-variant font-body-sm text-body-sm pt-0.5">
+<span class="text-[11px]">Mated Mar 1</span>
+<span class="text-[11px] text-primary font-semibold">Today: Day 42</span>
+<span class="text-[11px]">Due May 3</span>
+</div>
+</div>
+</div>
+<!-- Fetus Development This Week -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-[18px]">child_care</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Fetus Growth: Week 6</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Rapid organ &amp; bone mineralisation phase</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm bg-tertiary-fixed text-on-tertiary-fixed font-bold px-2 py-0.5 rounded-full">Day 36–42</span>
+</div>
+<!-- Size Comparison Banner -->
+<div class="flex items-center gap-space-md bg-surface-container-low rounded-xl p-space-sm">
+<div class="w-16 h-16 rounded-lg overflow-hidden bg-surface-container flex-shrink-0 relative">
+<img class="w-full h-full object-cover" data-alt="Close up warm photography of a ripe kiwi fruit resting beside a gentle dog paw illustration on organic rustic cloth surface with soft warm natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZK9rEyp-FYE8KJu6scatTQ6sKH1Opa62eohk5G7FSddvNJgiNnY-QYoXu5cslIelsGFSYTGrBqqmmujpS-0Z10ahio-CDBOq6NmSPDjSlfDverrnGaEQA5HsayTZOAIV-7UbBzSuWMrsHXxx0y5zh5icPIYGCG8NvD1dK--o9wGp66wmtfdGoOJAaa2bpd1fPdR4VWZgZzyT8w1PfUxvuRToqXOqk2d5OCxVec6c8mR5iK7FAiuHr7g"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm text-tertiary font-bold uppercase tracking-wider">Size Comparison</span>
+<span class="text-on-surface-variant text-[10px]">• ~7.5 cm</span>
+</div>
+<p class="font-body-md text-body-md text-on-surface font-semibold leading-tight mt-0.5">Puppies are now the size of a sweet Kiwi!</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Weight roughly 40-50 grams per pup.</p>
+</div>
+</div>
+<!-- Development Highlights -->
+<div class="grid grid-cols-3 gap-2 pt-1">
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col gap-1">
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[16px]">format_h4</span>
+<span class="font-label-sm text-label-sm font-bold">Skeleton</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Bone mineralization accelerates this week.</p>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col gap-1">
+<div class="flex items-center gap-1 text-secondary">
+<span class="material-symbols-outlined text-[16px]">pets</span>
+<span class="font-label-sm text-label-sm font-bold">Paws &amp; Claws</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Delicate toe claws begin distinct formation.</p>
+</div>
+<div class="bg-surface-container-low p-2.5 rounded-lg flex flex-col gap-1">
+<div class="flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[16px]">ecg_heart</span>
+<span class="font-label-sm text-label-sm font-bold">Heartbeat</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">200–240 bpm pulsing strong &amp; healthy.</p>
+</div>
+</div>
+</div>
+<!-- Quick Vitals Strip -->
+<div class="grid grid-cols-3 gap-2">
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Weight</span>
+<span class="material-symbols-outlined text-primary text-[18px]">scale</span>
+</div>
+<div class="mt-2">
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold">64.2 <span class="font-label-sm text-label-sm text-on-surface-variant">lbs</span></div>
+<span class="font-label-sm text-label-sm text-secondary font-bold inline-flex items-center">+4.8 lbs gained</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Appetite</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">restaurant</span>
+</div>
+<div class="mt-2">
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold">High</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Small meals x4</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Mood</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">bedtime</span>
+</div>
+<div class="mt-2">
+<div class="font-headline-sm text-headline-sm text-on-surface font-bold">Nesting</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Restful &amp; calm</span>
+</div>
+</div>
+</div>
+<!-- Today's Routine Checklist -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[18px]">task_alt</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Today's Routine</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">1 of 3 protocols logged today</p>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-bold bg-secondary-container px-2 py-0.5 rounded-full">Day 42 Checklist</span>
+</div>
+<div class="flex flex-col gap-2.5 mt-1">
+<!-- Item 1: Checked -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<button aria-label="Completed supplement" class="w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center flex-shrink-0">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</button>
+<div class="min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold line-through opacity-75 block truncate">Prenatal Calcium &amp; Folate</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Given at 8:00 AM with meal</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">Done</span>
+</div>
+<!-- Item 2: Temperature Log Urgent / Key -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-lowest border-2 border-primary/20 shadow-sm transition-all hover:border-primary/40">
+<div class="flex items-center gap-3 min-w-0">
+<button aria-label="Log temperature status" class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-primary/40"></span>
+</button>
+<div class="min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-body-md text-body-md text-on-surface font-semibold truncate">Rectal Temperature Log</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">100.4°F baseline</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Critical monitor starts Day 56</span>
+</div>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md px-3 py-1.5 rounded-full flex items-center gap-1 flex-shrink-0 shadow-sm active:scale-95 transition-transform" onclick="logTemperatureModal()">
+<span class="material-symbols-outlined text-[16px]">thermostat</span>
+<span>Log</span>
+</button>
+</div>
+<!-- Item 3: Evening Walk -->
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3">
+<button aria-label="Mark light walk complete" class="w-6 h-6 rounded-full bg-surface-container flex items-center justify-center flex-shrink-0 text-on-surface-variant">
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+</button>
+<div class="min-w-0">
+<span class="font-body-md text-body-md text-on-surface font-semibold block truncate">Light 15-min walk &amp; belly check</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant text-[11px]">Scheduled for 6:30 PM (Evening)</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Pending</span>
+</div>
+</div>
+</div>
+<!-- Reassurance & Vet Quick Contact Card -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center justify-between gap-space-sm">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">support_agent</span>
+</div>
+<div class="min-w-0">
+<div class="font-label-lg text-label-lg text-on-surface font-bold truncate">Dr. Aris Thorne, DVM</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Assigned Canine Obstetrician</p>
+</div>
+</div>
+<a class="bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary font-label-md text-label-md px-3.5 py-2 rounded-full font-bold flex items-center gap-1.5 shadow-sm transition-colors flex-shrink-0" href="tel:5550192837">
+<span class="material-symbols-outlined text-[18px]">phone_in_talk</span>
+<span>Call Vet</span>
+</a>
+</div>
+<!-- Floating / Docked Quick Action Bar -->
+<div class="sticky bottom-2 z-40 bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl p-2 shadow-xl flex items-center justify-between gap-2 border border-surface-container-high/40">
+<button class="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors" onclick="logTemperatureModal()">
+<span class="material-symbols-outlined text-primary text-[18px]">device_thermostat</span>
+<span class="truncate">Temp Log</span>
+</button>
+<button class="flex-1 bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md py-2.5 px-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors" onclick="addDailyNote()">
+<span class="material-symbols-outlined text-tertiary text-[18px]">edit_note</span>
+<span class="truncate">Add Note</span>
+</button>
+<a class="bg-error text-on-error font-label-md text-label-md py-2.5 px-3 rounded-xl flex items-center justify-center gap-1 shadow-sm active:scale-95 transition-transform flex-shrink-0" href="tel:911">
+<span class="material-symbols-outlined text-[18px]">emergency</span>
+<span class="font-bold">Hotline</span>
+</a>
+</div>
+<!-- Interactive Temp Log Inline Drawer / Modal Element -->
+<div class="hidden fixed inset-x-4 bottom-24 z-50 bg-surface-container-lowest rounded-2xl p-space-lg shadow-2xl flex flex-col gap-space-sm border border-surface-container" id="quick-temp-modal">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">thermostat</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Record Body Temp</h3>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1" onclick="logTemperatureModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Normal baseline: 99.8°F – 101.2°F. Labor drop to &lt;99.0°F expected around Day 60–62.</p>
+<div class="flex items-center justify-center gap-space-md py-2 bg-surface-container-low rounded-xl">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-sm active:scale-90 transition-transform" onclick="adjustTemp(-0.1)">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<div class="flex flex-col items-center">
+<span class="font-display-sm text-display-sm text-primary font-bold" id="current-temp-display">100.4</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Degrees Fahrenheit</span>
+</div>
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest text-on-surface flex items-center justify-center shadow-sm active:scale-90 transition-transform" onclick="adjustTemp(0.1)">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary py-3 rounded-full font-label-lg text-label-lg font-bold shadow-md active:scale-95 transition-all" onclick="saveTemperatureLog()">
+      Save Temperature Reading
+    </button>
+</div>
+</div>
+<script>
+  let tempValue = 100.4;
+
+  function logTemperatureModal() {
+    const modal = document.getElementById('quick-temp-modal');
+    if (modal) {
+      modal.classList.toggle('hidden');
+    }
+  }
+
+  function adjustTemp(delta) {
+    tempValue = Math.round((tempValue + delta) * 10) / 10;
+    const display = document.getElementById('current-temp-display');
+    if (display) {
+      display.textContent = tempValue.toFixed(1);
+    }
+  }
+
+  function saveTemperatureLog() {
+    const modal = document.getElementById('quick-temp-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+    }
+  }
+
+  function addDailyNote() {
+    const note = prompt("Add observation note for Bella (e.g. nesting behavior, appetite, milk beads):", "Resting peacefully in whelping box.");
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-4px_24px_-4px_rgba(61,64,91,0.06)]" data-active-classes="[&amp;_.nav-pill]:bg-secondary-container [&amp;_.nav-icon]:text-on-secondary-container [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-bold"><div class="flex justify-around items-center h-20 px-space-xs max-w-md mx-auto"><a aria-current="page" class="group flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-1 transition-all [&amp;_.nav-pill]:bg-secondary-container [&amp;_.nav-icon]:text-on-secondary-container [&amp;_.nav-label]:text-primary [&amp;_.nav-label]:font-bold" data-path="home" href="#"><div class="nav-pill flex items-center justify-center w-12 h-7 rounded-full transition-colors"><span class="nav-icon material-symbols-outlined text-on-surface-variant text-[22px] transition-colors">pets</span></div><span class="nav-label font-label-sm text-label-sm text-on-surface-variant mt-1 transition-colors">Home</span></a><a class="group flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-1 transition-all" data-path="weekly-guide" href="#"><div class="nav-pill flex items-center justify-center w-12 h-7 rounded-full transition-colors"><span class="nav-icon material-symbols-outlined text-on-surface-variant text-[22px] transition-colors">calendar_month</span></div><span class="nav-label font-label-sm text-label-sm text-on-surface-variant mt-1 transition-colors">Weekly</span></a><a class="group flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-1 transition-all" data-path="schedule" href="#"><div class="nav-pill flex items-center justify-center w-12 h-7 rounded-full transition-colors"><span class="nav-icon material-symbols-outlined text-on-surface-variant text-[22px] transition-colors">medication</span></div><span class="nav-label font-label-sm text-label-sm text-on-surface-variant mt-1 transition-colors">Schedule</span></a><a class="group flex flex-col items-center justify-center min-w-[64px] min-h-[48px] py-1 transition-all" data-path="tips-kit" href="#"><div class="nav-pill flex items-center justify-center w-12 h-7 rounded-full transition-colors"><span class="nav-icon material-symbols-outlined text-on-surface-variant text-[22px] transition-colors">medical_services</span></div><span class="nav-label font-label-sm text-label-sm text-on-surface-variant mt-1 transition-colors">Tips &amp; Kit</span></a></div></nav></body></html>
