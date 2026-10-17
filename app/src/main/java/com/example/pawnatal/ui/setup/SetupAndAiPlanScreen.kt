@@ -290,11 +290,8 @@ fun SetupAndAiPlanScreen(
 
                 if (showFirstMatingDatePicker) {
                     val initialMillis = remember(firstMatingDate) {
-                        try {
-                            LocalDate.parse(firstMatingDate).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-                        } catch (e: Exception) {
-                            LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-                        }
+                        val parsed = com.example.pawnatal.data.util.GestationCalculator.parseMatingDate(firstMatingDate)
+                        parsed.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
                     }
                     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
                     DatePickerDialog(
@@ -345,11 +342,8 @@ fun SetupAndAiPlanScreen(
 
                 if (showSecondTieDatePicker) {
                     val initialMillis = remember(secondTieDate) {
-                        try {
-                            LocalDate.parse(secondTieDate).atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-                        } catch (e: Exception) {
-                            LocalDate.now().atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
-                        }
+                        val parsed = com.example.pawnatal.data.util.GestationCalculator.parseMatingDate(secondTieDate)
+                        parsed.atStartOfDay(ZoneId.of("UTC")).toInstant().toEpochMilli()
                     }
                     val datePickerState = rememberDatePickerState(initialSelectedDateMillis = initialMillis)
                     DatePickerDialog(

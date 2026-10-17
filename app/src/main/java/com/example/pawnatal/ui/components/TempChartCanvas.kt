@@ -71,18 +71,16 @@ fun TempChartCanvas(
         val minTemp = 98.0
         val maxTemp = 101.5
 
+        // Calculate points aligned directly with column centers below
         Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(140.dp)
+                .height(130.dp)
         ) {
             val width = size.width
             val height = size.height
-            val paddingStart = 30f
-            val paddingEnd = 30f
-            val chartWidth = width - paddingStart - paddingEnd
 
-            // Draw Threshold Line at 99.0°F
+            // Draw Threshold Line at 99.0°F (37.2°C)
             val thresholdY = height - ((99.0 - minTemp) / (maxTemp - minTemp) * height).toFloat()
             drawLine(
                 color = PawAlertRed,
@@ -92,28 +90,25 @@ fun TempChartCanvas(
                 pathEffect = PathEffect.dashPathEffect(floatArrayOf(12f, 8f))
             )
 
-            // Draw Safe baseline band (100.0°F to 101.2°F)
+            // Draw Safe baseline band (100.0°F to 101.2°F / 37.8°C to 38.4°C)
             val safeBottomY = height - ((100.0 - minTemp) / (maxTemp - minTemp) * height).toFloat()
             val safeTopY = height - ((101.2 - minTemp) / (maxTemp - minTemp) * height).toFloat()
             drawRect(
                 color = PawSuccess.copy(alpha = 0.08f),
                 topLeft = Offset(0f, safeTopY),
-                size = androidx.compose.ui.geometry.Size(width, safeBottomY - safeTopY)
+                size = androidx.compose.ui.geometry.Size(width, (safeBottomY - safeTopY).coerceAtLeast(0f))
             )
 
-            // Calculate points
+            // Points calculated at the exact horizontal center of each column
+            val count = displayRecords.size
             val points = displayRecords.mapIndexed { index, record ->
-                val x = paddingStart + if (displayRecords.size > 1) {
-                    (index.toFloat() / (displayRecords.size - 1)) * chartWidth
-                } else {
-                    chartWidth / 2
-                }
+                val x = if (count > 0) ((index + 0.5f) / count) * width else width / 2f
                 val clamped = record.tempFahrenheit.coerceIn(minTemp, maxTemp)
                 val y = height - ((clamped - minTemp) / (maxTemp - minTemp) * height).toFloat()
                 Offset(x, y)
             }
 
-            // Draw line
+            // Draw curve line
             if (points.size > 1) {
                 val path = Path().apply {
                     moveTo(points.first().x, points.first().y)
@@ -137,40 +132,103 @@ fun TempChartCanvas(
                 val dotColor = if (record.isHypothermiaDrop) PawAlertRed else PawPrimary
                 drawCircle(
                     color = Color.White,
-                    radius = 6.dp.toPx(),
+                    radius = 5.dp.toPx(),
                     center = point
                 )
                 drawCircle(
                     color = dotColor,
-                    radius = 4.dp.toPx(),
+                    radius = 3.5.dp.toPx(),
                     center = point
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        // Labels below chart
+        // Clean, structured X-axis labels with equal weight per column to prevent any wrapping or overlap
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             displayRecords.forEach { record ->
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                val dateStr = formatShortDate(record)
+                val timeStr = formatShortTime(record)
+                val formattedTemp = com.example.pawnatal.data.util.UnitFormatter.formatTemperature(record.tempFahrenheit, tempUnit)
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 2.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
                     Text(
-                        text = record.displayLabel.replace(" (Latest)", ""),
+                        text = dateStr,
                         fontSize = 10.sp,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        softWrap = false,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
                     )
-                    val formatted = com.example.pawnatal.data.util.UnitFormatter.formatTemperature(record.tempFahrenheit, tempUnit)
-                    Text(
-                        text = formatted,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = if (record.isHypothermiaDrop) PawAlertRed else MaterialTheme.colorScheme.onSurface
-                    )
+                    if (timeStr.isNotBlank()) {
+                        Text(
+                            text = timeStr,
+                            fontSize = 9.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            softWrap = false,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(3.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                if (record.isHypothermiaDrop) PawAlertRed.copy(alpha = 0.15f)
+                                else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                RoundedCornerShape(6.dp)
+                            )
+                            .padding(horizontal = 4.dp, vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = formattedTemp,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = if (record.isHypothermiaDrop) PawAlertRed else MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            softWrap = false
+                        )
+                    }
                 }
             }
         }
+    }
+}
+
+private fun formatShortDate(record: TemperatureRecord): String {
+    return try {
+        val dt = java.time.Instant.ofEpochMilli(record.timestamp)
+            .atZone(java.time.ZoneId.systemDefault())
+        val monthStr = dt.month.name.take(3).lowercase().replaceFirstChar { it.uppercase() }
+        "${dt.dayOfMonth} $monthStr"
+    } catch (e: Exception) {
+        val raw = record.displayLabel.replace(" (Latest)", "").trim()
+        raw.split(",").firstOrNull()?.trim() ?: raw
+    }
+}
+
+private fun formatShortTime(record: TemperatureRecord): String {
+    return try {
+        val dt = java.time.Instant.ofEpochMilli(record.timestamp)
+            .atZone(java.time.ZoneId.systemDefault())
+        val hour = dt.hour
+        val minute = dt.minute
+        val amPm = if (hour >= 12) "PM" else "AM"
+        val hour12 = if (hour % 12 == 0) 12 else hour % 12
+        String.format(java.util.Locale.US, "%d:%02d %s", hour12, minute, amPm)
+    } catch (e: Exception) {
+        val raw = record.displayLabel.replace(" (Latest)", "").trim()
+        val parts = raw.split(",")
+        if (parts.size > 1) parts[1].trim() else ""
     }
 }

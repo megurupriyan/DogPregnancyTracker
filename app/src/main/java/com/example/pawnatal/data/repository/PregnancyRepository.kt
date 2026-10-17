@@ -14,10 +14,14 @@ class PregnancyRepository(
     context: Context,
     private val notificationManager: ReminderNotificationManager = ReminderNotificationManager(context)
 ) {
+    private val appContext: Context = context.applicationContext
     private val prefs: SharedPreferences =
-        context.getSharedPreferences("pawnatal_pregnancy_data", Context.MODE_PRIVATE)
+        appContext.getSharedPreferences("pawnatal_pregnancy_data", Context.MODE_PRIVATE)
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     private val _damProfileFlow = MutableStateFlow(loadDamProfile())
     val damProfileFlow: StateFlow<DamProfile> = _damProfileFlow.asStateFlow()
@@ -28,17 +32,83 @@ class PregnancyRepository(
     private val _tempHistoryFlow = MutableStateFlow(loadTempHistory())
     val tempHistoryFlow: StateFlow<List<TemperatureRecord>> = _tempHistoryFlow.asStateFlow()
 
+    init {
+        // Automatically reconcile timeline on creation
+        refreshForToday()
+    }
+
+    private fun resolveAnchorMatingDate(): String {
+        // 1. Try earliest manual temperature record timestamp
+        try {
+            val tempSerialized = prefs.getString("temp_history_json", null)
+            if (!tempSerialized.isNullOrBlank()) {
+                val list = json.decodeFromString<List<TemperatureRecord>>(tempSerialized)
+                val earliest = list.minByOrNull { it.timestamp }
+                if (earliest != null && earliest.timestamp > 0) {
+                    val recordDate = java.time.Instant.ofEpochMilli(earliest.timestamp)
+                        .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                    // Started at Day 2 on first entry, meaning mating was 1 day prior
+                    return recordDate.minusDays(1).toString()
+                }
+            }
+        } catch (_: Exception) {}
+
+        // 2. Try app installation date
+        try {
+            val installTime = appContext.packageManager.getPackageInfo(appContext.packageName, 0).firstInstallTime
+            if (installTime > 0) {
+                val installDate = java.time.Instant.ofEpochMilli(installTime)
+                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+                return installDate.minusDays(1).toString()
+            }
+        } catch (_: Exception) {}
+
+        // 3. Fallback to yesterday
+        return java.time.LocalDate.now().minusDays(1).toString()
+    }
+
     private fun loadDamProfile(): DamProfile {
         val serialized = prefs.getString("dam_profile_json", null)
-        return if (!serialized.isNullOrBlank()) {
+        val decoded = if (!serialized.isNullOrBlank()) {
             try {
                 json.decodeFromString<DamProfile>(serialized)
             } catch (e: Exception) {
-                DamProfile()
+                null
             }
         } else {
-            DamProfile()
+            null
         }
+
+        val profile = if (decoded != null) {
+            if (decoded.firstMatingDate.isBlank()) {
+                val anchor = resolveAnchorMatingDate()
+                decoded.copy(
+                    firstMatingDate = anchor,
+                    secondTieDate = if (decoded.secondTieDate.isBlank()) {
+                        java.time.LocalDate.parse(anchor).plusDays(2).toString()
+                    } else decoded.secondTieDate
+                )
+            } else {
+                decoded
+            }
+        } else {
+            val anchor = resolveAnchorMatingDate()
+            DamProfile(
+                name = "Bella",
+                breed = "Golden Retriever",
+                sizeClassification = "Large Breed • 25–32 kg",
+                firstMatingDate = anchor,
+                secondTieDate = java.time.LocalDate.parse(anchor).plusDays(2).toString(),
+                ageYears = 3,
+                parity = "Primiparous (1st Litter)",
+                baselineWeightLbs = 60.5,
+                currentWeightLbs = 60.5
+            )
+        }
+
+        // Persist immediately with encodeDefaults = true so firstMatingDate is never lost!
+        prefs.edit().putString("dam_profile_json", json.encodeToString(profile)).apply()
+        return profile
     }
 
     private fun loadCarePlan(): ObstetricCarePlan {
@@ -47,10 +117,14 @@ class PregnancyRepository(
             try {
                 json.decodeFromString<ObstetricCarePlan>(serialized)
             } catch (e: Exception) {
-                DefaultClinicalPlanProvider.createDefaultPlan(_damProfileFlow.value)
+                val def = DefaultClinicalPlanProvider.createDefaultPlan(_damProfileFlow.value)
+                prefs.edit().putString("care_plan_json", json.encodeToString(def)).apply()
+                def
             }
         } else {
-            DefaultClinicalPlanProvider.createDefaultPlan(_damProfileFlow.value)
+            val def = DefaultClinicalPlanProvider.createDefaultPlan(_damProfileFlow.value)
+            prefs.edit().putString("care_plan_json", json.encodeToString(def)).apply()
+            def
         }
         return com.example.pawnatal.data.util.GestationCalculator.reconcileCarePlan(initialPlan, _damProfileFlow.value)
     }

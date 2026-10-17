@@ -19,6 +19,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.time.Instant
@@ -45,10 +47,12 @@ fun ScheduleAndMedicalScreen(
     val settings by viewModel.settings.collectAsState()
     val context = LocalContext.current
 
+    val today = LocalDate.now()
     var showTempDialog by remember { mutableStateOf(false) }
     var showCalendarDatePicker by remember { mutableStateOf(false) }
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    var stripAnchorDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedDate by remember(today, damProfile.firstMatingDate) { mutableStateOf(today) }
+    var stripAnchorDate by remember(today, damProfile.firstMatingDate) { mutableStateOf(today) }
+    var showAllReadings by remember { mutableStateOf(false) }
 
     val scrollState = rememberScrollState()
 
@@ -72,11 +76,7 @@ fun ScheduleAndMedicalScreen(
     ) {
         // Gestation Calendar Strip Card - Fully interactive & relative to mating date
         val matingDate = remember(damProfile.firstMatingDate) {
-            try {
-                LocalDate.parse(damProfile.firstMatingDate)
-            } catch (e: Exception) {
-                LocalDate.now()
-            }
+            com.example.pawnatal.data.util.GestationCalculator.parseMatingDate(damProfile.firstMatingDate)
         }
 
         fun getGestationDayFor(date: LocalDate): Long {
@@ -288,12 +288,11 @@ fun ScheduleAndMedicalScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(imageVector = Icons.Default.Thermostat, contentDescription = null, tint = PawPrimary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
@@ -302,9 +301,10 @@ fun ScheduleAndMedicalScreen(
                             fontWeight = FontWeight.Bold
                         )
                     }
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Twice daily rectal reading",
-                        fontSize = 11.sp,
+                        text = "Twice daily rectal reading • Progesterone drop tracking",
+                        fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
@@ -340,7 +340,20 @@ fun ScheduleAndMedicalScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Morning / Evening Chips
+                // Today Morning / Evening Dynamic Cards
+                val todayMorningReading = remember(tempHistory, today) {
+                    tempHistory.filter {
+                        val d = Instant.ofEpochMilli(it.timestamp).atZone(ZoneId.systemDefault())
+                        d.toLocalDate() == today && d.hour < 12
+                    }.lastOrNull()
+                }
+                val todayEveningReading = remember(tempHistory, today) {
+                    tempHistory.filter {
+                        val d = Instant.ofEpochMilli(it.timestamp).atZone(ZoneId.systemDefault())
+                        d.toLocalDate() == today && d.hour >= 12
+                    }.lastOrNull()
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -348,7 +361,9 @@ fun ScheduleAndMedicalScreen(
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showTempDialog = true }
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
@@ -357,8 +372,17 @@ fun ScheduleAndMedicalScreen(
                             Icon(Icons.Default.WbTwilight, contentDescription = null, tint = PawTertiary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Today Morning", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text(UnitFormatter.formatTemperature(100.4, settings.tempUnit), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                Text("Today Morning", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                                if (todayMorningReading != null) {
+                                    Text(
+                                        text = UnitFormatter.formatTemperature(todayMorningReading.tempFahrenheit, settings.tempUnit),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        maxLines = 1
+                                    )
+                                } else {
+                                    Text("Tap to record", fontSize = 12.sp, color = PawPrimary, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                                }
                             }
                         }
                     }
@@ -366,7 +390,9 @@ fun ScheduleAndMedicalScreen(
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
                         shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { showTempDialog = true }
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
@@ -375,9 +401,261 @@ fun ScheduleAndMedicalScreen(
                             Icon(Icons.Default.Bedtime, contentDescription = null, tint = PawPrimary, modifier = Modifier.size(20.dp))
                             Spacer(modifier = Modifier.width(8.dp))
                             Column {
-                                Text("Today Evening", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                val latest = tempHistory.lastOrNull()?.tempFahrenheit ?: 100.6
-                                Text(UnitFormatter.formatTemperature(latest, settings.tempUnit), fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                Text("Today Evening", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
+                                if (todayEveningReading != null) {
+                                    Text(
+                                        text = UnitFormatter.formatTemperature(todayEveningReading.tempFahrenheit, settings.tempUnit),
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 14.sp,
+                                        maxLines = 1
+                                    )
+                                } else {
+                                    val latest = tempHistory.lastOrNull()
+                                    if (latest != null) {
+                                        Text(
+                                            text = UnitFormatter.formatTemperature(latest.tempFahrenheit, settings.tempUnit),
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 14.sp,
+                                            maxLines = 1
+                                        )
+                                    } else {
+                                        Text("Tap to record", fontSize = 12.sp, color = PawPrimary, fontWeight = FontWeight.SemiBold, maxLines = 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Dedicated Readings Log Table
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Readings Log History",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "${tempHistory.size} total entries",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Table Container Card
+                Card(
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)),
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        // Table Header Row
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "DATE & TIME",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1.35f)
+                            )
+                            Text(
+                                text = "STAGE",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.weight(0.85f)
+                            )
+                            Text(
+                                text = "READING",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.weight(1.0f)
+                            )
+                            Text(
+                                text = "STATUS",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.weight(0.95f)
+                            )
+                        }
+
+                        // Table Body Rows (Reverse chronological: most recent first)
+                        val sortedRecords = remember(tempHistory) { tempHistory.sortedByDescending { it.timestamp } }
+                        val recordsToDisplay = if (showAllReadings) sortedRecords else sortedRecords.take(4)
+
+                        if (recordsToDisplay.isEmpty()) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(20.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "No temperature records logged yet.",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        } else {
+                            recordsToDisplay.forEachIndexed { index, record ->
+                                val recordDt = Instant.ofEpochMilli(record.timestamp).atZone(ZoneId.systemDefault())
+                                val dateFormatted = recordDt.format(DateTimeFormatter.ofPattern("dd MMM"))
+                                val timeFormatted = recordDt.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                                val gestationDay = getGestationDayFor(recordDt.toLocalDate())
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Column 1: Date & Time
+                                        Column(modifier = Modifier.weight(1.35f)) {
+                                            Text(
+                                                text = dateFormatted,
+                                                fontSize = 12.sp,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                            Text(
+                                                text = timeFormatted,
+                                                fontSize = 10.sp,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                        }
+
+                                        // Column 2: Gestation Day Stage
+                                        Box(
+                                            modifier = Modifier.weight(0.85f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = if (gestationDay in 1..65) "Day $gestationDay" else "Pre-term",
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                textAlign = TextAlign.Center,
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                        }
+
+                                        // Column 3: Formatted Temperature Pill
+                                        Box(
+                                            modifier = Modifier.weight(1.0f),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            val formattedTemp = UnitFormatter.formatTemperature(record.tempFahrenheit, settings.tempUnit)
+                                            Box(
+                                                modifier = Modifier
+                                                    .background(
+                                                        if (record.isHypothermiaDrop) PawAlertRed.copy(alpha = 0.15f)
+                                                        else MaterialTheme.colorScheme.surface,
+                                                        RoundedCornerShape(6.dp)
+                                                    )
+                                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            ) {
+                                                Text(
+                                                    text = formattedTemp,
+                                                    fontSize = 12.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = if (record.isHypothermiaDrop) PawAlertRed else MaterialTheme.colorScheme.onSurface,
+                                                    maxLines = 1,
+                                                    softWrap = false
+                                                )
+                                            }
+                                        }
+
+                                        // Column 4: Status Badge
+                                        Box(
+                                            modifier = Modifier.weight(0.95f),
+                                            contentAlignment = Alignment.CenterEnd
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .background(
+                                                        if (record.isHypothermiaDrop) PawAlertRed.copy(alpha = 0.15f)
+                                                        else PawSuccess.copy(alpha = 0.15f),
+                                                        RoundedCornerShape(6.dp)
+                                                    )
+                                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                            ) {
+                                                Text(
+                                                    text = if (record.isHypothermiaDrop) "Drop ⚠️" else "Normal",
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = if (record.isHypothermiaDrop) PawAlertRed else PawSuccess,
+                                                    maxLines = 1,
+                                                    softWrap = false
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    if (record.notes.isNotBlank()) {
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = "Note: ${record.notes}",
+                                            fontSize = 10.sp,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            lineHeight = 13.sp,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
+
+                                if (index < recordsToDisplay.size - 1) {
+                                    HorizontalDivider(
+                                        thickness = 0.5.dp,
+                                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    )
+                                }
+                            }
+                        }
+
+                        // Expand/Collapse toggle if more than 4 items
+                        if (sortedRecords.size > 4) {
+                            HorizontalDivider(
+                                thickness = 0.5.dp,
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            )
+                            TextButton(
+                                onClick = { showAllReadings = !showAllReadings },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = if (showAllReadings) "Show Recent (4)" else "View All ${sortedRecords.size} Records",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = PawPrimary
+                                )
                             }
                         }
                     }
@@ -425,7 +703,7 @@ fun ScheduleAndMedicalScreen(
                         )
                     }
                     Text(
-                        text = "Trimester 3",
+                        text = "Trimester ${carePlan.insights.currentTrimester}",
                         fontSize = 12.sp,
                         color = PawSecondary,
                         fontWeight = FontWeight.SemiBold
@@ -465,7 +743,9 @@ fun ScheduleAndMedicalScreen(
                                     Text(
                                         text = visit.title,
                                         fontWeight = FontWeight.Bold,
-                                        fontSize = 14.sp
+                                        fontSize = 14.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -483,7 +763,9 @@ fun ScheduleAndMedicalScreen(
                                         text = if (isUpcoming) "In ${visit.daysUntil} Days" else visit.status,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (visit.status == "COMPLETED") PawSuccess else PawPrimary
+                                        color = if (visit.status == "COMPLETED") PawSuccess else PawPrimary,
+                                        maxLines = 1,
+                                        softWrap = false
                                     )
                                 }
                             }
@@ -511,7 +793,7 @@ fun ScheduleAndMedicalScreen(
                                 ) {
                                     Icon(Icons.Default.CalendarMonth, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Add to G-Cal", fontSize = 12.sp)
+                                    Text("Add to G-Cal", fontSize = 12.sp, maxLines = 1, softWrap = false)
                                 }
 
                                 OutlinedButton(
@@ -527,7 +809,7 @@ fun ScheduleAndMedicalScreen(
                                 ) {
                                     Icon(Icons.Default.NearMe, contentDescription = null, modifier = Modifier.size(16.dp))
                                     Spacer(modifier = Modifier.width(4.dp))
-                                    Text("Directions", fontSize = 12.sp)
+                                    Text("Directions", fontSize = 12.sp, maxLines = 1, softWrap = false)
                                 }
                             }
                         }
@@ -551,13 +833,18 @@ fun ScheduleAndMedicalScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        modifier = Modifier.weight(1f, fill = false),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Icon(imageVector = Icons.Default.Medication, contentDescription = null, tint = PawPrimary)
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = "Medications & Supplements",
                             style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     val takenCount = carePlan.medications.count { it.isCompleted }
@@ -565,7 +852,8 @@ fun ScheduleAndMedicalScreen(
                         text = "$takenCount/${carePlan.medications.size} Taken",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = PawPrimary
+                        color = PawPrimary,
+                        maxLines = 1
                     )
                 }
 
@@ -604,7 +892,9 @@ fun ScheduleAndMedicalScreen(
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 14.sp,
                                     modifier = Modifier.weight(1f),
-                                    color = if (med.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                                    color = if (med.isCompleted) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Box(
@@ -620,7 +910,9 @@ fun ScheduleAndMedicalScreen(
                                         text = if (med.isCompleted) "Completed ✓" else med.dueStatus,
                                         fontSize = 11.sp,
                                         fontWeight = FontWeight.Bold,
-                                        color = if (med.isCompleted) PawSuccess else PawPrimary
+                                        color = if (med.isCompleted) PawSuccess else PawPrimary,
+                                        maxLines = 1,
+                                        softWrap = false
                                     )
                                 }
                             }
@@ -674,8 +966,11 @@ fun ScheduleAndMedicalScreen(
                         style = MaterialTheme.typography.titleSmall
                     )
                     Spacer(modifier = Modifier.height(2.dp))
+                    val guide = carePlan.weeklyGuides.find { it.weekNumber == carePlan.insights.currentWeek }
+                    val nutritionTip = guide?.damStatus?.calorieDemandNote?.takeIf { it.isNotBlank() }
+                        ?: carePlan.breedNutritionNote
                     Text(
-                        text = "Week 6: Fetal size accelerates by 30%. Increase meal frequency to 3-4 smaller energy-dense portions daily.",
+                        text = "Week ${carePlan.insights.currentWeek}: $nutritionTip",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )

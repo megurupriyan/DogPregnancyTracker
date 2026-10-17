@@ -84,9 +84,49 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private var lastObservedDate: java.time.LocalDate = java.time.LocalDate.now()
+
+    private val dynamicDateReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+            val action = intent?.action
+            if (action == android.content.Intent.ACTION_DATE_CHANGED ||
+                action == android.content.Intent.ACTION_TIME_CHANGED ||
+                action == android.content.Intent.ACTION_TIMEZONE_CHANGED
+            ) {
+                lastObservedDate = java.time.LocalDate.now()
+                pregnancyViewModel.refreshForToday()
+            } else if (action == android.content.Intent.ACTION_TIME_TICK) {
+                val today = java.time.LocalDate.now()
+                if (today != lastObservedDate) {
+                    lastObservedDate = today
+                    pregnancyViewModel.refreshForToday()
+                }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        val filter = android.content.IntentFilter().apply {
+            addAction(android.content.Intent.ACTION_DATE_CHANGED)
+            addAction(android.content.Intent.ACTION_TIME_CHANGED)
+            addAction(android.content.Intent.ACTION_TIMEZONE_CHANGED)
+            addAction(android.content.Intent.ACTION_TIME_TICK)
+        }
+        registerReceiver(dynamicDateReceiver, filter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        try {
+            unregisterReceiver(dynamicDateReceiver)
+        } catch (_: Exception) {}
+    }
+
     override fun onResume() {
         super.onResume()
         // Ensure pregnancy timeline is fresh and reactive to daily date changes
+        lastObservedDate = java.time.LocalDate.now()
         pregnancyViewModel.refreshForToday()
     }
 

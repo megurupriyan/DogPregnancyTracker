@@ -11,7 +11,10 @@ import java.time.LocalDate
 
 class PregnancyAlarmReceiver : BroadcastReceiver() {
 
-    private val json = Json { ignoreUnknownKeys = true }
+    private val json = Json {
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     override fun onReceive(context: Context, intent: Intent?) {
         val action = intent?.action ?: return

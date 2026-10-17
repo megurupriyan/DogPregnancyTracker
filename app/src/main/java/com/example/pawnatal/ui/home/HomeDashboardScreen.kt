@@ -278,7 +278,22 @@ fun HomeDashboardScreen(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Fetus Growth Week 6 Card
+        // Fetus Growth Dynamic Card
+        val currentWeekGuide = carePlan.weeklyGuides.find { it.weekNumber == insights.currentWeek }
+            ?: carePlan.weeklyGuides.firstOrNull()
+
+        val weekEmoji = when (insights.currentWeek) {
+            1 -> "🔬"
+            2 -> "📍"
+            3 -> "🌱"
+            4 -> "🌰"
+            5 -> "🍋"
+            6 -> "🥝"
+            7 -> "🍎"
+            8 -> "🍊"
+            else -> "🐶"
+        }
+
         Card(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
             shape = RoundedCornerShape(20.dp),
@@ -298,7 +313,7 @@ fun HomeDashboardScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = "Rapid organ & bone mineralisation phase (Days 36–42)",
+                            text = "${currentWeekGuide?.title ?: "Growth Phase"} • ${currentWeekGuide?.dayRangeText ?: "Days ${(insights.currentWeek - 1) * 7 + 1}–${insights.currentWeek * 7}"}",
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -326,17 +341,17 @@ fun HomeDashboardScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "🥝", fontSize = 32.sp)
+                        Text(text = weekEmoji, fontSize = 32.sp)
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
-                                text = "Size Comparison: Sweet Kiwi (~7.5 cm)",
+                                text = "Size: ${currentWeekGuide?.puppySizeComparison ?: "Developing Embryo"}",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp,
                                 color = PawOnTertiaryContainer
                             )
                             Text(
-                                text = "Puppies weigh roughly 40–50 grams each. Toe claws and facial whisker buds are forming!",
+                                text = currentWeekGuide?.summary ?: "Fetal organs and skeletal framework developing on schedule.",
                                 fontSize = 12.sp,
                                 color = PawOnTertiaryContainer.copy(alpha = 0.9f)
                             )
@@ -346,14 +361,22 @@ fun HomeDashboardScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 3 Anatomy Features
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    FeaturePill(icon = Icons.Default.Pets, title = "Skeleton", subtitle = "Ossification", modifier = Modifier.weight(1f))
-                    FeaturePill(icon = Icons.Default.PanTool, title = "Paws & Claws", subtitle = "Distinct digits", modifier = Modifier.weight(1f))
-                    FeaturePill(icon = Icons.Default.MonitorHeart, title = "Heartbeat", subtitle = "200–240 bpm", modifier = Modifier.weight(1f))
+                // Dynamic Anatomy Features
+                val milestones = currentWeekGuide?.anatomicalMilestones.orEmpty()
+                if (milestones.isNotEmpty()) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        milestones.take(3).forEach { feat ->
+                            FeaturePill(
+                                icon = Icons.Default.CheckCircle,
+                                title = feat.title,
+                                subtitle = feat.description,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -382,6 +405,18 @@ fun HomeDashboardScreen(
                 ) {
                     val weightFormatted = com.example.pawnatal.data.util.UnitFormatter.formatWeight(damProfile.currentWeightLbs, settings.weightUnit)
                     val gainFormatted = com.example.pawnatal.data.util.UnitFormatter.formatWeightGain(damProfile.weightGainLbs, settings.weightUnit)
+                    val (appetiteVal, appetiteSub) = when (insights.currentWeek) {
+                        in 1..3 -> "Normal" to "Maintenance"
+                        in 4..5 -> "Surging (+15%)" to "3 meals daily"
+                        in 6..7 -> "High (+25–35%)" to "Small meals x4"
+                        else -> "Fluctuating" to "Energy-dense"
+                    }
+                    val (moodVal, moodSub) = when (insights.currentWeek) {
+                        in 1..3 -> "Affectionate" to "Normal routine"
+                        in 4..5 -> "Protective" to "Restful naps"
+                        in 6..7 -> "Nesting" to "Den seeking"
+                        else -> "Restless" to "Labor vigilance"
+                    }
                     VitalCard(
                         label = "Weight",
                         value = weightFormatted,
@@ -391,15 +426,15 @@ fun HomeDashboardScreen(
                     )
                     VitalCard(
                         label = "Appetite",
-                        value = "High (+25%)",
-                        sub = "Small meals x4",
+                        value = appetiteVal,
+                        sub = appetiteSub,
                         icon = Icons.Default.Restaurant,
                         modifier = Modifier.weight(1f)
                     )
                     VitalCard(
                         label = "Mood",
-                        value = "Nesting",
-                        sub = "Restful & calm",
+                        value = moodVal,
+                        sub = moodSub,
                         icon = Icons.Default.Bedtime,
                         modifier = Modifier.weight(1f)
                     )
@@ -549,13 +584,28 @@ private fun FeaturePill(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(10.dp),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(imageVector = icon, contentDescription = null, tint = PawPrimary, modifier = Modifier.size(18.dp))
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = title, fontWeight = FontWeight.Bold, fontSize = 12.sp)
-            Text(text = subtitle, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text(
+                text = title,
+                fontWeight = FontWeight.Bold,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = subtitle,
+                fontSize = 10.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                lineHeight = 13.sp,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center
+            )
         }
     }
 }
@@ -568,17 +618,41 @@ private fun VitalCard(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     modifier: Modifier = Modifier
 ) {
+    val valueFontSize = when {
+        value.length > 11 -> 12.sp
+        value.length > 8 -> 13.sp
+        else -> 14.sp
+    }
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)),
         shape = RoundedCornerShape(14.dp),
         modifier = modifier
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 10.dp)) {
             Icon(imageVector = icon, contentDescription = null, tint = PawSecondary, modifier = Modifier.size(16.dp))
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = label, fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Text(text = value, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-            Text(text = sub, fontSize = 10.sp, color = PawPrimary)
+            Text(
+                text = label,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = value,
+                fontWeight = FontWeight.Bold,
+                fontSize = valueFontSize,
+                maxLines = 1,
+                softWrap = false,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = sub,
+                fontSize = 10.sp,
+                color = PawPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

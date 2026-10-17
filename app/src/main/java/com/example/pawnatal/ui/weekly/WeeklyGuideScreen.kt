@@ -33,7 +33,7 @@ fun WeeklyGuideScreen(
     val damProfile by viewModel.damProfile.collectAsState()
     val weeklyGuides = carePlan.weeklyGuides
 
-    var selectedWeekNumber by remember { mutableStateOf(carePlan.insights.currentWeek) }
+    var selectedWeekNumber by remember(carePlan.insights.currentWeek) { mutableStateOf(carePlan.insights.currentWeek) }
     var expandWeeks1to5 by remember { mutableStateOf(false) }
     var expandWeeks7to9 by remember { mutableStateOf(false) }
 
@@ -127,8 +127,13 @@ fun WeeklyGuideScreen(
                         )
                     }
 
+                    val deliveryCountdown = if (activeGuide.weekNumber == carePlan.insights.currentWeek) {
+                        carePlan.insights.daysRemaining
+                    } else {
+                        activeGuide.daysToDelivery
+                    }
                     Text(
-                        text = "${activeGuide.daysToDelivery} Days to Delivery",
+                        text = "$deliveryCountdown Days to Delivery",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = PawPrimary

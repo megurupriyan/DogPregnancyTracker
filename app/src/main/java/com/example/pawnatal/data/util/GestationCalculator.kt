@@ -43,7 +43,7 @@ object GestationCalculator {
         existingInsights: ObstetricInsights? = null,
         asOfDate: LocalDate = LocalDate.now()
     ): ObstetricInsights {
-        val matingDate = parseMatingDate(matingDateStr)
+        val matingDate = if (matingDateStr.isNotBlank()) parseMatingDate(matingDateStr) else asOfDate.minusDays(1)
         val daysBetween = ChronoUnit.DAYS.between(matingDate, asOfDate).toInt()
         val currentDay = (daysBetween + 1).coerceIn(1, 65)
         val currentWeek = ((currentDay - 1) / 7 + 1).coerceIn(1, 9)
@@ -105,8 +105,9 @@ object GestationCalculator {
         dam: DamProfile,
         asOfDate: LocalDate = LocalDate.now()
     ): ObstetricCarePlan {
-        val matingDate = parseMatingDate(dam.firstMatingDate)
-        val insights = calculateInsights(dam.firstMatingDate, dam.breed, plan.insights, asOfDate)
+        val effectiveMatingDate = if (dam.firstMatingDate.isNotBlank()) dam.firstMatingDate else asOfDate.minusDays(1).toString()
+        val matingDate = parseMatingDate(effectiveMatingDate)
+        val insights = calculateInsights(effectiveMatingDate, dam.breed, plan.insights, asOfDate)
 
         // Reconcile veterinary visits relative to matingDate
         val updatedVisits = plan.veterinaryVisits.mapIndexed { index, visit ->
@@ -156,7 +157,7 @@ object GestationCalculator {
                 else -> 28 + (index * 10)
             }
             val milestoneDate = matingDate.plusDays(milestoneDay.toLong())
-            val isCompleted = asOfDate.isAfter(milestoneDate)
+            val isCompleted = insights.currentDay >= milestoneDay
             val window = if (milestone.dayWindow.isNotBlank() && (milestone.dayWindow.contains("Day", ignoreCase = true) || milestone.dayWindow.contains("–") || milestone.dayWindow.contains("-"))) {
                 milestone.dayWindow
             } else {

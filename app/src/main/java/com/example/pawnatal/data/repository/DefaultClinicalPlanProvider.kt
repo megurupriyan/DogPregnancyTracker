@@ -12,9 +12,20 @@ object DefaultClinicalPlanProvider {
         dam: DamProfile = DamProfile(),
         asOfDate: LocalDate = LocalDate.now()
     ): ObstetricCarePlan {
+        val effectiveMatingDate = if (dam.firstMatingDate.isNotBlank()) {
+            dam.firstMatingDate
+        } else {
+            asOfDate.minusDays(1).toString()
+        }
+        val effectiveDam = if (dam.firstMatingDate.isBlank()) {
+            dam.copy(firstMatingDate = effectiveMatingDate)
+        } else {
+            dam
+        }
+
         val insights = GestationCalculator.calculateInsights(
-            matingDateStr = dam.firstMatingDate,
-            breed = dam.breed,
+            matingDateStr = effectiveMatingDate,
+            breed = effectiveDam.breed,
             existingInsights = null,
             asOfDate = asOfDate
         )
@@ -179,7 +190,7 @@ object DefaultClinicalPlanProvider {
             )
         )
 
-        return GestationCalculator.reconcileCarePlan(rawPlan, dam, asOfDate)
+        return GestationCalculator.reconcileCarePlan(rawPlan, effectiveDam, asOfDate)
     }
 
     private fun generateWeeklyDetail(week: Int, dam: DamProfile): WeeklyGuideDetail {
